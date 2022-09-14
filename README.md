@@ -85,32 +85,20 @@ docker run -d --name same-rabbit --hostname my-rabbit -e RABBITMQ_DEFAULT_USER=U
 CQRS / DDD / MICROSERVICE 
 https://levelup.gitconnected.com/microservices-with-cqrs-in-typescript-and-nestjs-5a8af0a56c3a
 
-GATEWAY :
-Forward request / convert ( for exemple HTTP <=> GRPC)
+Firstly, the API Gateway will pick up the HTTP request, which forwards this request as gRPC protocol to the account microservice. Each microservice is split into a Command and a Query application. Since we will make a write request, this request will land on the Command application.
+
+There, the OpenAccountDto validates the incoming request. A command OpenAccountCommand will be created and handled by the Command Bus. The executed command will create the aggregate, which could be seen as an event container. Many things could happen. For example, we could replay previous events of this aggregate.
+
+However, this isn’t necessary since an account can be opened only once. Instead, we only create an AccountOpenedEvent and save this event and its event data in the MongoDB database.
+
+Then, we produce a message that holds the event data and sends this message over the Kafka Event Stream to the query application, where a consumer listens to incoming calls.
+
+We publish the event OpenedAccountEvent, which we received from the command application to the Event Bus. This event will then create a new entry in the PostgreSQL database in its execution. The eventual consistency is archived since write and read databases are in sync at this level.
+
+In the meantime, the OpenAccountSaga sends a gRPC request to the second microservice bank-funds-svc to deposit the initial opening balance. Again, this is a write request, so the command application of the bank-funds-svc will pick up this request.
+
+From there, the procedure is pretty similar to the original request. Commands will be created and executed, aggregate calls the event, create an entry to the read and write database, etc.
 
 
-Microservice : 
-Split in 2 parts 
-- Command application : CREATE / UPDATE / DELETE => Postgresql
-- Query application : GET => NOSQL db ( such as mongodb )
-
-
-Global flow in microservice following CQRS pattern :
-
-Exemple for a : OpenAccountDto
-
-DTO => validate the incomming query
-
-If OK => Command will be generated like OpenAccount
-And will be handle by the Command Bus
-
-Once the command is executed, that will generate an Aggregate ( kind of "event container" )
-=> Important point we can replay previous events of this aggregate
-Evidement dans certain cas de command ça ne sert à rien ( exemple OpenAccount car on le fait que une fois )
-
-Sinon, on save AccountOpenedEvent (event + event data) dans mongoDB
-
-quand c'est fait, on produit un message qui contient les event data => kafka event stream
-Consumer est deja là pour ecouter cette event
 
 
