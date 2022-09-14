@@ -80,3 +80,37 @@ Nest is [MIT licensed](LICENSE).
 docker run -d --name same-rabbit --hostname my-rabbit -e RABBITMQ_DEFAULT_USER=USERNAME -e RABBITMQ_DEFAULT_PASS=PASSWORD -p 5673:5672 -p 15673:15672 rabbitmq:management
 
 ````
+
+
+CQRS / DDD / MICROSERVICE 
+https://levelup.gitconnected.com/microservices-with-cqrs-in-typescript-and-nestjs-5a8af0a56c3a
+
+GATEWAY :
+Forward request / convert ( for exemple HTTP <=> GRPC)
+
+
+Microservice : 
+Split in 2 parts 
+- Command application : CREATE / UPDATE / DELETE => Postgresql
+- Query application : GET => NOSQL db ( such as mongodb )
+
+
+Global flow in microservice following CQRS pattern :
+
+Exemple for a : OpenAccountDto
+
+DTO => validate the incomming query
+
+If OK => Command will be generated like OpenAccount
+And will be handle by the Command Bus
+
+Once the command is executed, that will generate an Aggregate ( kind of "event container" )
+=> Important point we can replay previous events of this aggregate
+Evidement dans certain cas de command ça ne sert à rien ( exemple OpenAccount car on le fait que une fois )
+
+Sinon, on save AccountOpenedEvent (event + event data) dans mongoDB
+
+quand c'est fait, on produit un message qui contient les event data => kafka event stream
+Consumer est deja là pour ecouter cette event
+
+
