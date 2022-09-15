@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { KillDrakeCommand } from './commands/KillDrakeCommand';
-import { KillDrakeDto } from './dto/KillDrakeDto';
+import { KillDrakeCommand } from './KillDrakeCommand';
+import { KillDrakeDto } from './KillDrakeDto';
 
 @Controller('app')
 export class AppController {

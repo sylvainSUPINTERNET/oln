@@ -1,10 +1,9 @@
-import { Inject } from "@nestjs/common";
-import { CommandHandler, ICommand, ICommandHandler } from "@nestjs/cqrs";
-import { KillDrakeCommand } from "../commands/KillDrakeCommand";
-
+import { Inject, Injectable } from "@nestjs/common";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
+import { KillDrakeCommand } from "./KillDrakeCommand";
 
 @CommandHandler(KillDrakeCommand)
-export class KillerDrakeCommandHandler implements ICommandHandler<KillDrakeCommand> {
+export class KillDrakeCommandHandler implements ICommandHandler<KillDrakeCommand> {
 
     async execute(command: KillDrakeCommand):Promise<any>{
         const {heroId, dragonId } = command;
