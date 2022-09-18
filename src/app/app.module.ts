@@ -1,13 +1,16 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
+import { CqrsModule } from '@nestjs/cqrs';
+import { ItemRepository } from 'src/item/item.repository';
+import { OrderHandler } from 'src/order/order.handler';
+import { OrderSaga } from 'src/order/order.saga';
 import { AppController } from './app.controller';
-import { CommandBus, CqrsModule, QueryBus } from '@nestjs/cqrs';
-import { KillDrakeCommandHandler } from './KillDrakeCommandHandler';
 
 @Module({
   imports: [CqrsModule],
-  providers: [AppService, KillDrakeCommandHandler],
   controllers: [AppController],
-
+  providers: [
+  OrderHandler,
+  OrderSaga,
+  ItemRepository],
 })
 export class AppModule {}

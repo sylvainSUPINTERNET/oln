@@ -102,3 +102,4 @@ From there, the procedure is pretty similar to the original request. Commands wi
 
 
 
+https://medium.com/swlh/cqrs-explained-with-nest-js-1bcf83c5c839

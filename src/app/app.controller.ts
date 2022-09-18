@@ -1,15 +1,21 @@
-import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { KillDrakeCommand } from './KillDrakeCommand';
-import { KillDrakeDto } from './KillDrakeDto';
+import { Controller, Get } from '@nestjs/common';
+import { EventBus, QueryBus } from '@nestjs/cqrs';
+import { OrderEvent } from 'src/order/order.events';
+import * as uuid from 'uuid';
 
-@Controller('app')
+
+@Controller()
 export class AppController {
-
-    constructor(private readonly commandBus: CommandBus,private readonly queryBus: QueryBus) {}
-
-    @Post(':id/kill')
-    async killDrake(@Param('id') id: string, @Body() body: KillDrakeDto) {
-        return this.commandBus.execute(new KillDrakeCommand(body.killerId, id))
-    }
+  constructor(private readonly eventBus: EventBus,
+             private queryBus: QueryBus) { }
+  @Get()
+  async bid(): Promise<object> {
+    const orderTransactionGUID = uuid.v4();
+    // We are hard-coding values here
+    // instead of collecting them from a request
+    this.eventBus.publish(
+    new OrderEvent(
+    orderTransactionGUID, 'Daniel Trimson', 'Samsung LED TV',    50000),);
+    return { status: 'PENDING', };
+  }
 }
