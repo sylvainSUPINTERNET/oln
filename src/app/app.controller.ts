@@ -13,6 +13,7 @@ export class AppController {
     const orderTransactionGUID = uuid.v4();
     // We are hard-coding values here
     // instead of collecting them from a request
+    
     this.eventBus.publish(
     new OrderEvent(
     orderTransactionGUID, 'Daniel Trimson', 'Samsung LED TV',    50000),);
